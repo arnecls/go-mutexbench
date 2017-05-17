@@ -12,7 +12,7 @@ This code is purely educational and should not be used in any other project.
 
 ## Results
 
-Taken on an Intel Core i7 (Gen4) 2.2 Ghz using Golang 1.8.2
+Taken on an Intel Core i7 (Gen4) 2.2 Ghz using Golang 1.8.1
 
 ### 10.000.000 loops single threaded
 
