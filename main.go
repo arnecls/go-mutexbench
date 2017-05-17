@@ -58,18 +58,18 @@ func MutexTest(numRoutines, loops int) {
 		Benchmark("mutex", loops, LockedWithMutex)
 		Benchmark("spinlock", loops, LockedWithSpinLock)
 		Benchmark("spinlock2", loops, LockedWithSpinLockBit)
-		Benchmark("mutex defer", loops, LockedWithDeferMutex)
-		Benchmark("spinlock defer", loops, LockedWithDeferSpinLock)
-		Benchmark("spinlock2 defer", loops, LockedWithDeferSpinLockBit)
+		Benchmark("defer mutex", loops, LockedWithDeferMutex)
+		Benchmark("defer spinlock", loops, LockedWithDeferSpinLock)
+		Benchmark("defer spinlock2", loops, LockedWithDeferSpinLockBit)
 	} else {
 		fmt.Printf("Multi threaded (%d):\n", numRoutines)
 		BenchmarkThreaded("plain", numRoutines, loops, Calculation)
 		BenchmarkThreaded("mutex", numRoutines, loops, LockedWithMutex)
 		BenchmarkThreaded("spinlock", numRoutines, loops, LockedWithSpinLock)
 		BenchmarkThreaded("spinlock2", numRoutines, loops, LockedWithSpinLockBit)
-		BenchmarkThreaded("mutex defer", numRoutines, loops, LockedWithDeferMutex)
-		BenchmarkThreaded("spinlock defer", numRoutines, loops, LockedWithDeferSpinLock)
-		BenchmarkThreaded("spinlock defer2", numRoutines, loops, LockedWithDeferSpinLockBit)
+		BenchmarkThreaded("defer mutex", numRoutines, loops, LockedWithDeferMutex)
+		BenchmarkThreaded("defer spinlock", numRoutines, loops, LockedWithDeferSpinLock)
+		BenchmarkThreaded("defer spinlock2", numRoutines, loops, LockedWithDeferSpinLockBit)
 	}
 }
 
