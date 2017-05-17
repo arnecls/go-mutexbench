@@ -3,6 +3,10 @@
 Personal playground for concurrency benchmarks.
 This code is purely educational and should not be used in any other project.
 
+## Run it
+
+`go-mutexbench <goroutines> <loops>`
+
 ## Findings
 
 1. Defer has a higher performance impact than expected
