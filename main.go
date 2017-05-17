@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime"
-	"runtime/pprof"
+	//"runtime/pprof"
 	//"runtime/trace"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -23,16 +23,15 @@ func Benchmark(name string, loops int, f func()) {
 	fmt.Printf("%-15s : %.2f\n", name, float64(d.Nanoseconds())/1000000.0)
 }
 
-func BenchmarkThreaded(name string, loops int, f func()) {
-	parallelN := runtime.NumCPU() * 2
+func BenchmarkThreaded(name string, numRoutines, loops int, f func()) {
 	started := new(sync.WaitGroup)
 	ready := new(sync.WaitGroup)
 	stopped := new(sync.WaitGroup)
 	ready.Add(1)
-	started.Add(parallelN)
-	stopped.Add(parallelN)
+	started.Add(numRoutines)
+	stopped.Add(numRoutines)
 
-	for i := 0; i < parallelN; i++ {
+	for i := 0; i < numRoutines; i++ {
 		go func() {
 			started.Done()
 			ready.Wait()
@@ -51,29 +50,46 @@ func BenchmarkThreaded(name string, loops int, f func()) {
 	fmt.Printf("%-15s : %.2f\n", name, float64(d.Nanoseconds())/1000000.0)
 }
 
-func MutexTest(loops int) {
-	fmt.Println("Single threaded:")
-	Benchmark("plain", loops, Calculation)
-	Benchmark("mutex", loops, LockedWithMutex)
-	Benchmark("mutex defer", loops, LockedWithDeferMutex)
-	Benchmark("spinlock", loops, LockedWithSpinLock)
-	Benchmark("spinlock defer", loops, LockedWithDeferSpinLock)
-	Benchmark("spinlock2", loops, LockedWithSpinLock2)
-	Benchmark("spinlock2 defer", loops, LockedWithDeferSpinLock2)
-
-	fmt.Println("\nMulti threaded:")
-	BenchmarkThreaded("plain", loops, Calculation)
-	BenchmarkThreaded("mutex", loops, LockedWithMutex)
-	BenchmarkThreaded("mutex defer", loops, LockedWithDeferMutex)
-	BenchmarkThreaded("spinlock", loops, LockedWithSpinLock)
-	BenchmarkThreaded("spinlock defer", loops, LockedWithDeferSpinLock)
-	BenchmarkThreaded("spinlock2", loops, LockedWithSpinLock2)
-	BenchmarkThreaded("spinlock defer2", loops, LockedWithDeferSpinLock2)
+func MutexTest(numRoutines, loops int) {
+	fmt.Printf("Benchmarking %d loops\n", loops)
+	if numRoutines < 2 {
+		fmt.Println("Single threaded:")
+		Benchmark("plain", loops, Calculation)
+		Benchmark("mutex", loops, LockedWithMutex)
+		Benchmark("spinlock", loops, LockedWithSpinLock)
+		Benchmark("spinlock2", loops, LockedWithSpinLockBit)
+		Benchmark("mutex defer", loops, LockedWithDeferMutex)
+		Benchmark("spinlock defer", loops, LockedWithDeferSpinLock)
+		Benchmark("spinlock2 defer", loops, LockedWithDeferSpinLockBit)
+	} else {
+		fmt.Printf("Multi threaded (%d):\n", numRoutines)
+		BenchmarkThreaded("plain", numRoutines, loops, Calculation)
+		BenchmarkThreaded("mutex", numRoutines, loops, LockedWithMutex)
+		BenchmarkThreaded("spinlock", numRoutines, loops, LockedWithSpinLock)
+		BenchmarkThreaded("spinlock2", numRoutines, loops, LockedWithSpinLockBit)
+		BenchmarkThreaded("mutex defer", numRoutines, loops, LockedWithDeferMutex)
+		BenchmarkThreaded("spinlock defer", numRoutines, loops, LockedWithDeferSpinLock)
+		BenchmarkThreaded("spinlock defer2", numRoutines, loops, LockedWithDeferSpinLockBit)
+	}
 }
 
 func main() {
+	if len(os.Args) != 3 {
+		panic("two args required: num threads, num loops")
+	}
+
+	numRoutines, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		panic("arg 1 (num go routines) is not a number")
+	}
+
+	loops, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+		panic("arg 2 (num loops) is not a number")
+	}
+
 	// Profile
-	file, err := os.Create("cpu.profile")
+	/*file, err := os.Create("cpu.profile")
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +101,7 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	// Trace
-	/*traceFile, err := os.Create("run.trace")
+	traceFile, err := os.Create("run.trace")
 	if err != nil {
 		panic(err)
 	}
@@ -97,5 +113,5 @@ func main() {
 	defer trace.Stop()*/
 
 	// Run test
-	MutexTest(1000000)
+	MutexTest(numRoutines, loops)
 }

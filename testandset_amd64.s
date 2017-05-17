@@ -1,7 +1,7 @@
 #include "textflag.h"
 
-// func Lock32(v *int32) bool
-TEXT ·Lock32(SB), NOSPLIT, $0-16
+// func TestAndSet32(v *int32) bool
+TEXT ·TestAndSet32(SB), NOSPLIT, $0-16
     MOVQ    v(FP), BX
     MOVL    $1, AX          // prepare return value
     LOCK 
@@ -10,8 +10,8 @@ TEXT ·Lock32(SB), NOSPLIT, $0-16
     MOVL    AX, ret+8(FP)
     RET
 
-// func Unlock32(v *int32)
-TEXT ·Unlock32(SB), NOSPLIT, $0-8
+// func TestAndReset32(v *int32)
+TEXT ·TestAndReset32(SB), NOSPLIT, $0-8
     MOVQ    v(FP), BX
     LOCK 
     BTRQ    $0, (BX)        // Set bit 0 to 0

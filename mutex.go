@@ -8,12 +8,12 @@ import (
 var globalState int64
 var mutex *sync.Mutex
 var spinLock SpinLock
-var spinLock2 SpinLock2
+var spinLock2 SpinLockBit
 
 func init() {
 	mutex = new(sync.Mutex)
 	spinLock = NewSpinLock()
-	spinLock2 = NewSpinLock2()
+	spinLock2 = NewSpinLockBit()
 }
 
 func Calculation() {
@@ -44,13 +44,13 @@ func LockedWithDeferSpinLock() {
 	Calculation()
 }
 
-func LockedWithSpinLock2() {
+func LockedWithSpinLockBit() {
 	spinLock2.Lock()
 	Calculation()
 	spinLock2.Unlock()
 }
 
-func LockedWithDeferSpinLock2() {
+func LockedWithDeferSpinLockBit() {
 	spinLock2.Lock()
 	defer spinLock2.Unlock()
 	Calculation()
