@@ -15,8 +15,8 @@ This code is purely educational and should not be used in any other project.
 Taken on an Intel Core i7 (Gen4) 2.2 Ghz using Golang 1.8.1.
 
 - Mutex uses sync.Mutex
-- Spinlock uses a minimal spinlock using atomic.CompareAndSwap
-- Spinlock uses a minimal spinlock using the Intel BitTestAndSet instruction
+- Spinlock uses a minimal spinlock implementation via atomic.CompareAndSwap
+- Spinlock2 uses a minimal spinlock implementation via the Intel BitTestAndSet instruction
 
 ### 10.000.000 loops single threaded
 
